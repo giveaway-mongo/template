@@ -1,0 +1,46 @@
+FROM node:18-alpine As install
+
+WORKDIR /app
+
+COPY --chown=node:node protogen.sh package.json pnpm-lock.yaml ./
+COPY --chown=node:node prisma ./prisma
+COPY --chown=node:node protos ./protos
+
+RUN ls -la
+
+ENV PNPM_HOME=/usr/local/bin
+
+RUN npm install -g pnpm
+
+RUN pnpm -v
+RUN pnpm install
+
+RUN apk update && apk add curl
+
+# Install protobuf
+ENV PROTOC_ZIP=protoc-3.14.0-linux-x86_64.zip
+
+RUN apk add gcompat
+
+RUN apk update && apk add unzip
+RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/${PROTOC_ZIP} \
+    && unzip -o ${PROTOC_ZIP} -d /usr/local bin/protoc \
+    && unzip -o $PROTOC_ZIP -d /usr/local 'include/*' \
+    && rm -f $PROTOC_ZIP
+
+
+RUN ls ./protos -la
+RUN ls ./protos/comment -la
+
+RUN chmod +x ./protogen.sh
+RUN ./protogen.sh
+
+
+RUN ls ./protogen -la
+
+RUN npx prisma generate
+
+RUN ls ./prisma/generated -la
+
+# docker-compose.test.yaml should run the app with env.RUN = test
+ENTRYPOINT ["./docker-entrypoint.sh"]

@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package rpc;
+
+service Courses {
+    rpc GetCourses(GetCoursesReq) returns (GetCoursesResp) {}
+    rpc GetCourse(GetCourseReq) returns (GetCourseResp) {}
+}
+
+service PingPong {
+    rpc GetPing(Ping) returns (Pong) {}
+}
+
+
+message Ping {
+    string message = 1;
+}
+
+message Pong {
+    string message = 1;
+}
+
+message Course {
+    string id = 1;
+    string author_id = 2;
+    string name = 3;
+    string cover_pic_url = 4;
+    string description = 5;
+    bool   is_published = 6;
+}
+
+message GetCourseResp {
+    Course course = 1;
+}
+
+message GetCoursesResp {
+    repeated Course courses = 1;
+}
+
+message GetCoursesReq {
+    string search = 1;
+    string user_id = 2;
+    uint32 limit = 3;
+    uint32 page = 4;
+}
+
+message GetCourseReq {
+    string id = 1;
+}

@@ -1,0 +1,48 @@
+image: docker:latest
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  NAMESPACE: "lms-services"
+  GIT_SUBMODULE_STRATEGY: recursive
+
+services:
+  - docker:23.0.1-dind
+before_script:
+  - docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD
+  - apk update && apk --no-cache --update add build-base openssh curl
+
+stages:
+  - test
+  - build
+  - deploy
+
+test-image:
+  stage: test
+  script:
+    - make build-image TAG=$CI_PIPELINE_IID PROJECT_NAME=$CI_PROJECT_NAMESPACE
+    - docker-compose -f docker-compose.test.yaml run app
+    - make push-image TAG=$CI_PIPELINE_IID PROJECT_NAME=$CI_PROJECT_NAMESPACE
+
+
+build_image_prod:
+  stage: build
+  script:
+    - make build-image TAG=$CI_PIPELINE_IID PROJECT_NAME=$CI_PROJECT_NAMESPACE
+    - make push-image TAG=$CI_PIPELINE_IID PROJECT_NAME=$CI_PROJECT_NAMESPACE
+
+deploy_to_prod:
+  stage: deploy
+  script:
+    - curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+    - chmod +x ./kubectl && mkdir -p ~/.kube && mv ./kubectl ~/.kube && export PATH=$PATH:$HOME/.kube
+    - echo $LMS_KUBECONFIG
+    - touch ~/.kube/config
+    - cp $LMS_KUBECONFIG ~/.kube/config
+    - DEPLOYMENT=$(echo $CI_PROJECT_NAME | sed s/_/-/g | sed s/fast-//g)
+    - echo $DEPLOYMENT
+    - kubectl apply -f .kube/
+    - kubectl set image -n $NAMESPACE deployment/$DEPLOYMENT $DEPLOYMENT=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_PIPELINE_IID
+    - rm -rf ~/.kube
+  only:
+    - master

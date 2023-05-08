@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package sample;
+import "sample/sample.proto";
+
+service SamplesService {
+  rpc CreateSample(SampleCreateRequest) returns (SampleCreateResponse) {}
+  rpc UpdateSample(SampleUpdateRequest) returns (SampleUpdateResponse) {}
+  rpc DetailSample(SampleDetailRequest) returns (SampleDetailResponse) {}
+  rpc ListSample(SampleListRequest) returns (SampleListResponse) {}
+}

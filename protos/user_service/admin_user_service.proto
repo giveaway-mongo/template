@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package genproto;
+
+import "admin_user.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "genproto/user_service";
+
+service AdminUserService{
+  rpc CreateAdminUser(CreateAdminUserRequest) returns(CreateAdminUserResponse){}
+  rpc UpdateAdminUser(UpdateAdminUserRequest) returns(google.protobuf.Empty){}
+  rpc GetAdminUser(GetAdminUserRequest) returns(GetAdminUserResponse){}
+  rpc GetAllAdminUsers(GetAllAdminUsersRequest) returns(GetAllAdminUsersResponse){}
+  rpc DeleteAdminUser(DeleteAdminUserRequest) returns(google.protobuf.Empty){}
+}

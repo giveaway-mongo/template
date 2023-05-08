@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package rpc;
+
+service Users {
+    rpc GetUsers(GetUsersReq) returns (GetUsersResp) {}
+    rpc GetUser(GetUserReq) returns (GetUserResp) {}
+    rpc RegisterUser(RegisterUserReq) returns (RegisterUserResp) {}
+}
+
+message User {
+    string id = 1;
+    string email = 2;
+    string full_name = 3;
+    string avatar_url = 4;
+    bool   is_active = 5;
+}
+
+message GetUserReq {
+    User user = 1;
+}
+
+message GetUserResp {
+    User user = 1;
+}
+
+message GetUsersReq {
+    string search = 1;
+    string id = 2;
+    uint32 limit = 3;
+    uint32 page = 4;
+}
+
+message GetUsersResp {
+  repeated User users = 1;
+}
+
+// Register
+
+message RegisterUserReq {
+    string email = 1;
+    string password = 2;
+    string password_confirmation = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string role = 6;
+    string birthday = 7;
+    string avatar_url = 8;
+}
+
+message RegisterUserResp {
+    int32 status = 1;
+    repeated string error = 2;
+    int32 user_id = 3;
+}

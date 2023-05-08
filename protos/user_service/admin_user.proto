@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package genproto;
+
+option go_package = "genproto/user_service";
+import "user_common.proto";
+
+message AdminUser {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  string phone_number = 4;
+}
+
+message AdminUserData{
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string phone_number = 5;
+  UserRoleModel role = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message CreateAdminUserRequest {
+  AdminUser admin_user = 1;
+}
+
+message CreateAdminUserResponse {
+  string id = 1;
+}
+
+message UpdateAdminUserRequest {
+  string id = 1;
+  AdminUser admin_user = 2;
+}
+
+message GetAdminUserRequest {
+  string id = 1;
+}
+
+message GetAdminUserResponse {
+  AdminUserData admin_user = 1;
+}
+
+message GetAllAdminUsersRequest {
+  uint32 page = 1;
+  uint32 limit = 2;
+  string search = 3;
+  string phone_number = 4;
+  string role_id = 5;
+  UserSort sort = 6;
+}
+
+message GetAllAdminUsersResponse{
+  repeated AdminUserData admin_users = 1;
+  uint32 count = 2;
+}
+
+message DeleteAdminUserRequest {
+  string id = 1;
+}

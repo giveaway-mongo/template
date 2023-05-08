@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package comment;
+import "comment/comment.proto";
+
+service CommentsService {
+  rpc CreateComment(CommentCreateRequest) returns (CommentCreateResponse) {}
+  rpc UpdateComment(CommentUpdateRequest) returns (CommentUpdateResponse) {}
+  rpc DetailComment(CommentDetailRequest) returns (CommentDetailResponse) {}
+  rpc ListComment(CommentListRequest) returns (CommentListResponse) {}
+}

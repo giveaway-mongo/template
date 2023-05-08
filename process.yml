@@ -1,0 +1,6 @@
+apps:
+  - name: 'grpc-server'
+    script: './dist/src/main.js'
+
+  - name: 'rabbitMQ-server'
+    script: './dist/src/rabbitmq.bootstrap.js'

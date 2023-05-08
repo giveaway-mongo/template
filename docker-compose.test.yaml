@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    image: "${REGISTRY}/${PROJECT_NAME}/${APP}:${TAG}"
+    ports:
+     - '8080:50051'
+    environment:
+      RUN: test
+      HOST: 'localhost'
+      DATABASE_URL: 'postgresql://postgres:root@postgres:5432/postgres?schema=public'
+      PORT: '50051'
+    links:
+      - postgres
+    networks:
+      - app-tier
+
+  postgres:
+    image: postgres:15.2
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - '5432'
+
+  rabbitmq:
+    image: 'bitnami/rabbitmq:latest'
+    networks:
+      - app-tier
+
+networks:
+  app-tier:
+    driver: bridge

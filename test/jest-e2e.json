@@ -1,0 +1,14 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@protogen/(.*)$": "<rootDir>/../protogen/$1",
+    "^@prisma/generated$": "<rootDir>/../prisma/generated"
+  },
+  "setupFilesAfterEnv": ["<rootDir>/setup-jest.ts"]
+}

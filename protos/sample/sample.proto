@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+
+package sample;
+
+import "sample/common.proto";
+
+message Sample {
+  string guid = 1;
+  string title = 2;
+  string text = 3;
+}
+
+message SampleCreateRequest {
+  string title = 1;
+  string text = 2;
+}
+
+message SampleCreateResponse {
+  Sample result = 1;
+  repeated Error errors = 2;
+}
+
+message SampleUpdateRequest {
+  string guid = 1;
+  string title = 2;
+  string text = 3;
+}
+
+message SampleUpdateResponse {
+  Sample result = 1;
+  repeated Error errors = 2;
+}
+
+message SampleDetailRequest {
+  string guid = 1;
+}
+
+message SampleDetailResponse {
+  Sample result = 1;
+  repeated Error errors = 2;
+}
+
+message SampleListRequest {
+  ListOptions options = 1;
+}
+
+message SampleListResponse {
+  repeated Sample results = 1;
+  int64 count = 2;
+  repeated Error errors = 3;
+}

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package comment;
+
+// Error
+// User
+// Empty
+
+message ListOptions {
+  map<string, string> filter = 1;
+  repeated string ordering = 2;
+  string search = 3;
+  int64 page = 4;
+  int64 limit = 5;
+}
+
+message Error {
+  repeated string location = 1;
+  string message = 2;
+  string type = 3;
+  repeated string nonFieldError = 4;
+}
