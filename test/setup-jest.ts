@@ -1,18 +1,12 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app/app.module';
-import { getGrpcTestingOptions } from '../src/common/grpc/grpc-options';
-import { join } from 'path';
+import { AppModule } from '@src/app/app.module';
+import { getGrpcTestingOptions } from '@common/grpc/grpc-options';
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
-import { isTestEnvironment } from '../src/common/utils/environment';
-import { getRabbitMQOptions } from '../src/common/rabbitMQ/rabbitMQ-options';
-
-const protoPath = [
-  join(__dirname, '..', 'protos/sample/sample.proto'),
-  join(__dirname, '..', 'protos/sample/common.proto'),
-  join(__dirname, '..', 'protos/sample/service.proto'),
-];
+import { isTestEnvironment } from '@common/utils/environment';
+import { getRabbitMQOptions } from '@common/rabbitMQ/rabbitMQ-options';
+import { protoPath } from '@src/constants/proto-path';
 
 const execAsync = promisify(exec);
 

@@ -7,7 +7,7 @@ import { isTestEnvironment } from '../common/utils/environment';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: !isTestEnvironment() ? '.env.development' : '.env.test',
+      envFilePath: !isTestEnvironment() ? '.env' : '.env.test',
     }),
     SamplesModule,
   ],

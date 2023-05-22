@@ -30,7 +30,6 @@ RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.14
 
 
 RUN ls ./protos -la
-RUN ls ./protos/comment -la
 
 RUN chmod +x ./protogen.sh
 RUN ./protogen.sh
@@ -42,5 +41,37 @@ RUN npx prisma generate
 
 RUN ls ./prisma/generated -la
 
+FROM node:18-alpine as test
+
+ARG DATABASE_URL
+
+ENV DATABASE_URL ${DATABASE_URL}
+
+WORKDIR /app
+
+COPY . .
+COPY --from=install /app/protogen ./protogen
+COPY --from=install /app/prisma ./prisma
+COPY --from=install /app/node_modules ./node_modules
+
+RUN ls -la
+
+ENV PNPM_HOME=/usr/local/bin
+
+RUN npm install -g pnpm
+
+RUN pnpm -v
+
+RUN npm install -g dotenv-cli
+
+RUN chmod +x ./docker-entrypoint.sh
+
+RUN ls -la
+
+COPY ./docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
+
+RUN ls / -la
+
 # docker-compose.test.yaml should run the app with env.RUN = test
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

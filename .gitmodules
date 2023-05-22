@@ -1,3 +1,3 @@
 [submodule "protos"]
 	path = protos
-	url = ../../lab-ms/protos.git
+	url = ../../NodeJS-Giveaway-App-MongoDB/protos

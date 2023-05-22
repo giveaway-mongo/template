@@ -30,11 +30,9 @@ RUN curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.14
 
 
 RUN ls ./protos -la
-RUN ls ./protos/comment -la
 
 RUN chmod +x ./protogen.sh
 RUN ./protogen.sh
-
 
 RUN ls ./protogen -la
 
@@ -74,11 +72,23 @@ COPY --chown=node:node --from=build /app/package.json ./package.json
 COPY --chown=node:node --from=build /app/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY --chown=node:node --from=build /app/ecosystem.config.js ./ecosystem.config.js
 
+ENV PNPM_HOME=/usr/local/bin
+
+RUN npm install -g pnpm
+
+RUN pnpm -v
+
 RUN npm install -g pm2
 
 RUN ls -la
 
-RUN chmod +x /app/docker-entrypoint.sh
+RUN npm install -g dotenv-cli
+
+RUN chmod +x ./docker-entrypoint.sh
+
+RUN ls -la
+
+COPY ./docker-entrypoint.sh /
 
 # env.RUN must be "production"
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

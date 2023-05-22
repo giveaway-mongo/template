@@ -4,7 +4,11 @@ variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
   NAMESPACE: "lms-services"
+  REGISTRY: "registry.gitlab.com"
+  ENV_TAG: "latest"
   GIT_SUBMODULE_STRATEGY: recursive
+  CONTAINER_TEST_IMAGE: $REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_PIPELINE_IID
+  CONTAINER_DEV_IMAGE: $REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:dev
 
 services:
   - docker:23.0.1-dind
@@ -17,32 +21,37 @@ stages:
   - build
   - deploy
 
-test-image:
+build_image_test:
   stage: test
   script:
-    - make build-image TAG=$CI_PIPELINE_IID PROJECT_NAME=$CI_PROJECT_NAMESPACE
+    - echo $CONTAINER_DEV_IMAGE
+    - docker pull $CONTAINER_DEV_IMAGE || true
+    - docker build -f Dockerfile.test --cache-from $CONTAINER_DEV_IMAGE -t $CONTAINER_TEST_IMAGE .
     - docker-compose -f docker-compose.test.yaml run app
-    - make push-image TAG=$CI_PIPELINE_IID PROJECT_NAME=$CI_PROJECT_NAMESPACE
-
 
 build_image_prod:
   stage: build
   script:
-    - make build-image TAG=$CI_PIPELINE_IID PROJECT_NAME=$CI_PROJECT_NAMESPACE
-    - make push-image TAG=$CI_PIPELINE_IID PROJECT_NAME=$CI_PROJECT_NAMESPACE
+    - echo $CONTAINER_DEV_IMAGE
+    - docker pull $CONTAINER_DEV_IMAGE || true
+    - docker build --cache-from $CONTAINER_DEV_IMAGE -t $CONTAINER_TEST_IMAGE .
+    - docker push $CONTAINER_TEST_IMAGE
+  only:
+    - master
 
 deploy_to_prod:
   stage: deploy
   script:
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_DEV_IMAGE
+    - docker push $CONTAINER_DEV_IMAGE
     - curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
     - chmod +x ./kubectl && mkdir -p ~/.kube && mv ./kubectl ~/.kube && export PATH=$PATH:$HOME/.kube
-    - echo $LMS_KUBECONFIG
-    - touch ~/.kube/config
     - cp $LMS_KUBECONFIG ~/.kube/config
     - DEPLOYMENT=$(echo $CI_PROJECT_NAME | sed s/_/-/g | sed s/fast-//g)
     - echo $DEPLOYMENT
     - kubectl apply -f .kube/
-    - kubectl set image -n $NAMESPACE deployment/$DEPLOYMENT $DEPLOYMENT=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_PIPELINE_IID
+    - kubectl set image -n $NAMESPACE deployment/$DEPLOYMENT $DEPLOYMENT=$CONTAINER_TEST_IMAGE
     - rm -rf ~/.kube
   only:
     - master

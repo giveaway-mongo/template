@@ -12,12 +12,12 @@ datasource db {
 }
 
 model Sample {
-  id        Int       @id @default(autoincrement())
-  guid      String    @unique
+  id        Int      @id @default(autoincrement())
+  guid      String   @unique
   title     String
   text      String
-  isActive  Boolean?  @default(true)
-  isDeleted Boolean?  @default(false)
-  createdAt DateTime?
-  updatedAt DateTime?
+  isActive  Boolean? @default(true)
+  isDeleted Boolean? @default(false)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @db.Timestamptz(6)
 }

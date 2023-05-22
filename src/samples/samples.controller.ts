@@ -1,6 +1,13 @@
 import { Controller } from '@nestjs/common';
 import { SamplesService } from './samples.service';
-import { Ctx, EventPattern, GrpcMethod, Payload, RmqContext, Transport } from '@nestjs/microservices'
+import {
+  Ctx,
+  EventPattern,
+  GrpcMethod,
+  Payload,
+  RmqContext,
+  Transport,
+} from '@nestjs/microservices';
 
 import {
   SampleCreateRequest,
@@ -18,6 +25,7 @@ import {
 } from './dto/detail-sample.dto';
 
 import { SampleListRequest, SampleListResponse } from './dto/list-sample.dto';
+import { UserEvent } from './dto/broker.dto';
 
 @Controller()
 export class SamplesController {
@@ -64,9 +72,11 @@ export class SamplesController {
     return { result, errors };
   }
 
-  @EventPattern('sample.pattern', Transport.RMQ)
-  async sampleConsumer(@Payload() data: any, @Ctx() context: RmqContext) {
-    console.log('received');
+  @EventPattern('user.user.add', Transport.RMQ)
+  async sampleConsumer(
+    @Payload() data: UserEvent,
+    @Ctx() context: RmqContext,
+  ) {
     console.log(
       data,
       context.getPattern(),

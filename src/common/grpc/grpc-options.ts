@@ -1,5 +1,10 @@
 import { GrpcOptions, Transport } from '@nestjs/microservices';
 
+const HOST = process.env.HOST || 'localhost';
+const PORT = process.env.PORT || 50051;
+
+const URL = `${HOST}:${PORT}`;
+
 export const getGrpcOptions = (
   serviceName: string,
   protoPath: string[],
@@ -7,7 +12,7 @@ export const getGrpcOptions = (
   transport: Transport.GRPC,
   options: {
     package: serviceName,
-    url: `${process.env.HOST || 'localhost'}:${process.env.PORT || 50051}`,
+    url: URL,
     protoPath,
   },
 });
@@ -18,7 +23,7 @@ export const getGrpcTestingOptions = (
 ): GrpcOptions => ({
   transport: Transport.GRPC,
   options: {
-    url: 'localhost:50051',
+    url: URL,
     package: packageName,
     protoPath,
   },

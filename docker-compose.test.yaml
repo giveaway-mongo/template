@@ -3,18 +3,28 @@ version: '3.9'
 services:
   app:
     build: .
-    image: "${REGISTRY}/${PROJECT_NAME}/${APP}:${TAG}"
+    image: '${CONTAINER_TEST_IMAGE}'
     ports:
-     - '8080:50051'
+      - '8080:50051'
     environment:
       RUN: test
       HOST: 'localhost'
-      DATABASE_URL: 'postgresql://postgres:root@postgres:5432/postgres?schema=public'
       PORT: '50051'
+      DATABASE_URL: 'postgresql://postgres:root@postgres:5432/postgres?schema=public'
+      RABBITMQ_HOST: 'rabbitmq'
+      RABBITMQ_USERNAME: 'user'
+      RABBITMQ_PASSWORD: 'bitnami'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     links:
       - postgres
+      - rabbitmq
     networks:
       - app-tier
+
 
   postgres:
     image: postgres:15.2
@@ -22,11 +32,28 @@ services:
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: root
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - '5432'
+    networks:
+      - app-tier
 
   rabbitmq:
     image: 'bitnami/rabbitmq:latest'
+    environment:
+      RABBITMQ_USERNAME: user
+      RABBITMQ_PASSWORD: bitnami
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5672:5672"
     networks:
       - app-tier
 
