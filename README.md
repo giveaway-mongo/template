@@ -3,6 +3,12 @@
 ## Installation
 
 ```bash
+$ npm install -g dotenv-cli
+```
+
+Also, install **protoc**
+
+```bash
 $ pnpm install
 ```
 
@@ -31,7 +37,14 @@ git pull origin master
 Pull proto files and other submodules
 
 ```bash
-git submodule update --recursive --remote
+git submodule update --recursive --remote --merge
+```
+
+Or, just configure alias. `git config --global alias.supdate "submodule update --recursive --remote --merge"`.
+
+Then use
+```bash
+git supdate
 ```
 
 Install all the dependencies

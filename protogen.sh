@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 echo "Protogen is starting..."
 mkdir "protogen"
 

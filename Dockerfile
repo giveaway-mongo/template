@@ -15,7 +15,7 @@ RUN npm install -g pnpm
 RUN pnpm -v
 RUN pnpm install
 
-RUN apk update && apk add curl
+RUN apk update && apk add curl && apk add bash
 
 # Install protobuf
 ENV PROTOC_ZIP=protoc-3.14.0-linux-x86_64.zip
