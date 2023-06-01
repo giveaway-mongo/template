@@ -8,6 +8,6 @@ const paths = [
 ];
 
 export const protoPath = generateCommonProtoPaths(
-  join(__dirname, '..', '..', 'protos'),
+  join(process.cwd(), 'protos'),
   paths,
 );
