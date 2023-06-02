@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: bitnami/mongodb:5.0.18
+    restart: always
+    ports:
+      - '27017:27017'
+    environment:
+      MONGODB_ADVERTISED_HOSTNAME: 127.0.0.1
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_ROOT_USER: mongodb
+      MONGODB_ROOT_PASSWORD: mongodb
+      MONGODB_REPLICA_SET_KEY: replicasetkey123
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - app-tier
+    volumes:
+      - 'mongo-db:/bitnami/mongodb'
+
+networks:
+  app-tier:
+    driver: bridge
+
+volumes:
+  mongo-db:

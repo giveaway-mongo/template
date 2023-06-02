@@ -4,7 +4,7 @@ set -e
 
 cd /app
 
-echo "Database: ""$DATABASE_HOST":"$DATABASE_PORT"
+echo "Database: ""$DATABASE_URL"
 
 ls -la
 
@@ -27,6 +27,8 @@ fi
 if [[ $RUN == "test" ]]; then
   echo -e "\nRun tests"
   export NODE_ENV='test'
+
+  printf  "\nDATABASE_URL=%s" "$DATABASE_URL" >> ./.env.docker-test
 
   npm run test:docker-e2e
   exit

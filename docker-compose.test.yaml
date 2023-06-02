@@ -3,47 +3,77 @@ version: '3.9'
 services:
   app:
     build: .
-    image: '${CONTAINER_TEST_IMAGE}'
+    image: app
     ports:
       - '8080:50051'
     environment:
       RUN: test
       HOST: 'localhost'
       PORT: '50051'
-      DATABASE_URL: 'postgresql://postgres:root@postgres:5432/postgres?schema=public'
+      DATABASE_URL: 'mongodb://root:prisma@mongodb-primary:27017/test?authSource=admin&retryWrites=false'
       RABBITMQ_HOST: 'rabbitmq'
       RABBITMQ_USERNAME: 'user'
       RABBITMQ_PASSWORD: 'bitnami'
     depends_on:
-      postgres:
-        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     links:
-      - postgres
+      - mongodb-primary
+      - mongodb-secondary
+      - mongodb-arbiter
       - rabbitmq
     networks:
       - app-tier
 
-
-  postgres:
-    image: postgres:15.2
-    restart: always
+  mongodb-primary:
+    image: 'bitnami/mongodb:5.0.18'
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: root
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_PASSWORD=prisma
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
     ports:
-      - '5432'
+      - 27017
+    volumes:
+      - 'mongodb_master_data:/bitnami'
     networks:
       - app-tier
 
+  mongodb-secondary:
+    image: 'bitnami/mongodb:5.0.18'
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-secondary
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=prisma
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+    ports:
+      - 27017
+    networks:
+      - app-tier
+
+  mongodb-arbiter:
+    image: 'bitnami/mongodb:5.0.18'
+    depends_on:
+      - mongodb-primary
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb-arbiter
+      - MONGODB_REPLICA_SET_MODE=arbiter
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+      - MONGODB_INITIAL_PRIMARY_PORT_NUMBER=27017
+      - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=prisma
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+    ports:
+      - 27017
+    networks:
+      - app-tier
+
+
   rabbitmq:
-    image: 'bitnami/rabbitmq:latest'
+    image: 'bitnami/rabbitmq:3.9.29'
     environment:
       RABBITMQ_USERNAME: user
       RABBITMQ_PASSWORD: bitnami
@@ -53,10 +83,14 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "5672:5672"
+      - "5672"
     networks:
       - app-tier
 
 networks:
   app-tier:
     driver: bridge
+
+volumes:
+  mongodb_master_data:
+    driver: local
