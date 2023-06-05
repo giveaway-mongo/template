@@ -26,7 +26,7 @@ services:
       - app-tier
 
   mongodb-primary:
-    image: 'bitnami/mongodb:5.0.18'
+    image: 'bitnami/mongodb:latest'
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
       - MONGODB_REPLICA_SET_MODE=primary
@@ -40,7 +40,7 @@ services:
       - app-tier
 
   mongodb-secondary:
-    image: 'bitnami/mongodb:5.0.18'
+    image: 'bitnami/mongodb:latest'
     depends_on:
       - mongodb-primary
     environment:
@@ -56,7 +56,7 @@ services:
       - app-tier
 
   mongodb-arbiter:
-    image: 'bitnami/mongodb:5.0.18'
+    image: 'bitnami/mongodb:latest'
     depends_on:
       - mongodb-primary
     environment:
@@ -73,7 +73,7 @@ services:
 
 
   rabbitmq:
-    image: 'bitnami/rabbitmq:3.9.29'
+    image: 'bitnami/rabbitmq:latest'
     environment:
       RABBITMQ_USERNAME: user
       RABBITMQ_PASSWORD: bitnami
