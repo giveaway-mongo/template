@@ -18,7 +18,7 @@
     "test:watch": "jest --watch",
     "protogen": "protogen.sh",
     "test:cov": "jest --coverage",
-    "test:e2e": "concurrently --kill-others \"docker-compose -f docker-compose.mongo.yaml up\" \"dotenv -e .env.test -- jest --config ./test/jest-e2e.json\"",
+    "test:e2e": "docker stop mongodb-test && concurrently --kill-others \"docker-compose -f docker-compose.mongo.yaml up\" \"dotenv -e .env.test -- jest --config ./test/jest-e2e.json\"",
     "test:docker-e2e": "dotenv -e .env.docker-test -- jest --config ./test/jest-e2e.json",
     "test:db-push": "dotenv -e .env.test -- npx prisma db push --force-reset",
     "docker:build": "docker build -f Dockerfile.test -t app . && docker-compose -f docker-compose.test.yaml run app"
