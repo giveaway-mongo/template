@@ -73,10 +73,7 @@ export class SamplesController {
   }
 
   @EventPattern('user.user.add', Transport.RMQ)
-  async sampleConsumer(
-    @Payload() data: UserEvent,
-    @Ctx() context: RmqContext,
-  ) {
+  async sampleConsumer(@Payload() data: UserEvent, @Ctx() context: RmqContext) {
     console.log(
       data,
       context.getPattern(),

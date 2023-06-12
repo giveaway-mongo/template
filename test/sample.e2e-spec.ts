@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { SamplesController } from '../src/samples/samples.controller';
+import { SamplesController } from '../src/modules/samples/samples.controller';
 import prisma from './client';
 import { samples } from './fixtures/samples';
 import { applyFixtures } from './utils/applyFixtures';
@@ -54,7 +54,7 @@ describe('SampleController (e2e)', () => {
     expect(result.text).toEqual('This is the second test sample!');
   });
 
-  it('adds one sample', async () => {
+  it('creates one sample', async () => {
     const sample: SampleCreateRequest = {
       title: 'Title for created sample',
       text: 'Text for created sample',
@@ -91,5 +91,44 @@ describe('SampleController (e2e)', () => {
     expect(detailResult.guid).toEqual(updatedSample.guid);
     expect(detailResult.title).toEqual(updatedSample.title);
     expect(detailResult.text).toEqual(updatedSample.text);
+  });
+
+  it('errors. Creating one sample without title', async () => {
+    const sample: SampleCreateRequest = {
+      title: null,
+      text: 'Text for created sample',
+    };
+    try {
+      await controller.create(sample);
+    } catch (error) {
+      expect(error.error.fieldErrors[0].location[0]).toEqual('title');
+    }
+  });
+
+  it('errors. Creating one sample without text', async () => {
+    const sample: SampleCreateRequest = {
+      title: 'title',
+      text: null,
+    };
+
+    try {
+      await controller.create(sample);
+    } catch (error) {
+      expect(error.error.fieldErrors[0].location[0]).toEqual('text');
+    }
+  });
+
+  it('errors. Creating one sample without title and text', async () => {
+    const sample: SampleCreateRequest = {
+      title: null,
+      text: null,
+    };
+
+    try {
+      await controller.create(sample);
+    } catch (error) {
+      expect(error.error.fieldErrors[0].location[0]).toEqual('title');
+      expect(error.error.fieldErrors[1].location[0]).toEqual('text');
+    }
   });
 });

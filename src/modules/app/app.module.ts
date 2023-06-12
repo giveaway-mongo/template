@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SamplesModule } from '../samples/samples.module';
 import { ConfigModule } from '@nestjs/config';
-import { isTestEnvironment } from '../common/utils/environment';
+import { isTestEnvironment } from '@common/utils/environment';
 
 @Module({
   imports: [

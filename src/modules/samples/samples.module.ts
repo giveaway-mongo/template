@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { SamplesService } from './samples.service';
 import { SamplesController } from './samples.controller';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '@src/prisma/prisma.module';
 import { ClientsModule } from '@nestjs/microservices';
-import { getRabbitMQOptions } from '../common/rabbitMQ/rabbitMQ-options';
+import { getRabbitMQOptions } from '@common/rabbitMQ/rabbitMQ-options';
 
 @Module({
   controllers: [SamplesController],
