@@ -83,6 +83,12 @@ If you do not need that, just delete the ClientModule.
 After that, write e2e tests and run them using pnpm test:e2e.
 
 # Testing
+
+Run mongodb locally if not already started:
+```bash
+pnpm mongo:start
+```
+
 Run tests via:
 ```bash
 pnpm test:e2e
@@ -90,7 +96,7 @@ pnpm test:e2e
 
 All tests are configured via `jest-e2e.json` and `setup-jest.ts`
 
-For that to work, you need to have PostgreSQL and RabbitMQ running on your local machine.
+For that to work, you need to have MongoDB and RabbitMQ running on your local machine.
 
 If you want to test by using docker, just run:
 
