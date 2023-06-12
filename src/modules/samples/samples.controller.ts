@@ -12,19 +12,13 @@ import {
 import {
   SampleCreateRequest,
   SampleCreateResponse,
-} from './dto/create-sample.dto';
-
-import {
-  SampleUpdateRequest,
-  SampleUpdateResponse,
-} from './dto/update-sample.dto';
-
-import {
   SampleDetailRequest,
   SampleDetailResponse,
-} from './dto/detail-sample.dto';
-
-import { SampleListRequest, SampleListResponse } from './dto/list-sample.dto';
+  SampleListRequest,
+  SampleListResponse,
+  SampleUpdateRequest,
+  SampleUpdateResponse,
+} from '@protogen/sample/sample';
 import { UserEvent } from './dto/broker.dto';
 
 @Controller()

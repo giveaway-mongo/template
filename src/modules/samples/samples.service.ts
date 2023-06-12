@@ -1,11 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientRMQ, RpcException } from '@nestjs/microservices';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '@src/prisma/prisma.service';
 import { getListOptions } from '@common/utils/list-params';
-import { SampleCreateRequest } from './dto/create-sample.dto';
-import { SampleUpdateRequest } from './dto/update-sample.dto';
+import {
+  SampleCreateRequest,
+  SampleListRequest,
+  SampleUpdateRequest,
+} from '@protogen/sample/sample';
 import { Prisma, Sample } from '@prisma/generated';
-import { SampleListRequest } from './dto/list-sample.dto';
 import { generateGuid } from '@common/utils/generate-guid';
 import { WithError } from '@common/types/utils';
 import { SampleEvent } from './dto/broker.dto';
