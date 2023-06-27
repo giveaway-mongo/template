@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample
+spec:
+  selector:
+    matchLabels:
+      app: sample-app
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: sample-app
+    spec:
+      containers:
+        - name: sample
+          image: ghcr.io/giveaway-mongo/sample:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: sample-configmap
+          ports:
+            - containerPort: 50051
+              name: sample-port

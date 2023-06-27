@@ -6,6 +6,10 @@
     "deleteOutDir": true,
     "assets": [
       {
+        "include": "../config",
+        "outDir": "./dist/config"
+      },
+      {
         "include": "../protos/**/*.proto",
         "outDir": "./dist/protos/"
       },

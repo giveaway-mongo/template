@@ -1,0 +1,90 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  TEST_IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+  DEV_IMAGE: ghcr.io/${{ github.repository }}:latest
+  PROJECT_NAME: sample
+
+jobs:
+  test:
+   runs-on: ubuntu-latest
+   steps:
+   - name: Submodule sync
+     uses: actions/checkout@v2
+     with:
+       submodules: recursive
+
+   - name: Checkout
+     uses: actions/checkout@v2
+
+   - name: Build test image
+     run: docker build -f Dockerfile.test -t app .
+
+   - name: Start test
+     run: docker-compose -f docker-compose.test.yaml run app
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Submodule sync
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Login to CR
+      run:  docker login ghcr.io -u ${{ github.actor }} -p  ${{ secrets.ACCESS_TOKEN }}
+
+    - name: Build
+      run: docker build -t ${{ env.TEST_IMAGE }} .
+
+    - name: Push to github registry
+      run: docker push ${{ env.TEST_IMAGE }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Login to CR
+      run:  docker login ghcr.io -u ${{ github.actor }} -p  ${{ secrets.ACCESS_TOKEN }}
+
+    - name: Pull Docker image
+      run: docker pull ${{ env.TEST_IMAGE }}
+
+    - name: Tag the image
+      run: docker tag ${{ env.TEST_IMAGE }} ${{ env.DEV_IMAGE }}
+
+    - name: Push to github registry
+      run: docker push ${{ env.DEV_IMAGE }}
+
+    - name: Install kubectl
+      run:  curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+
+    - name: Config kubernetes
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      run: |
+        chmod +x ./kubectl && mkdir -p ~/.kube
+        mv ./kubectl ~/.kube && export PATH=$PATH:$HOME/.kube
+        touch ~/.kube/config
+        echo $KUBE_CONFIG | base64 --decode > ~/.kube/config
+
+    - name: Apply config
+      run: kubectl apply -f config/
+
+    - name: Deploy
+      run: kubectl set image deployment/${{ env.PROJECT_NAME }} ${{ env.PROJECT_NAME }}=${{ env.TEST_IMAGE }}
+
+    - name: Status
+      run: kubectl rollout status deployment/${{ env.PROJECT_NAME }}

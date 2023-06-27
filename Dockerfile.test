@@ -2,7 +2,7 @@ FROM node:18-alpine As install
 
 WORKDIR /app
 
-COPY --chown=node:node protogen.sh package.json pnpm-lock.yaml ./
+COPY --chown=node:node scripts/protogen.sh package.json pnpm-lock.yaml ./
 COPY --chown=node:node prisma ./prisma
 COPY --chown=node:node protos ./protos
 
@@ -64,11 +64,9 @@ RUN pnpm -v
 
 RUN npm install -g dotenv-cli
 
-RUN chmod +x ./docker-entrypoint.sh
-
 RUN ls -la
 
-COPY ./docker-entrypoint.sh /
+COPY scripts/docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 
 RUN ls / -la

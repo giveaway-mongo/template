@@ -2,7 +2,7 @@ FROM node:18-alpine As install
 
 WORKDIR /app
 
-COPY --chown=node:node protogen.sh package.json pnpm-lock.yaml ./
+COPY --chown=node:node scripts/protogen.sh package.json pnpm-lock.yaml ./
 COPY --chown=node:node prisma ./prisma
 COPY --chown=node:node protos ./protos
 
@@ -67,9 +67,9 @@ FROM node:18-alpine As production
 WORKDIR /app
 
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
-COPY --chown=node:node --from=build /app/dist ./dist
+COPY --chown=node:node --from=build /app/dist ./
 COPY --chown=node:node --from=build /app/package.json ./package.json
-COPY --chown=node:node --from=build /app/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY --chown=node:node --from=build /app/scripts/docker-entrypoint.sh ./docker-entrypoint.sh
 COPY --chown=node:node --from=build /app/ecosystem.config.js ./ecosystem.config.js
 
 ENV PNPM_HOME=/usr/local/bin
@@ -84,11 +84,11 @@ RUN ls -la
 
 RUN npm install -g dotenv-cli
 
-RUN chmod +x ./docker-entrypoint.sh
 
 RUN ls -la
 
-COPY ./docker-entrypoint.sh /
+COPY scripts/docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 
 # env.RUN must be "production"
 ENTRYPOINT ["/docker-entrypoint.sh"]

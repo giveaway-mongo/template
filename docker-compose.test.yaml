@@ -1,9 +1,9 @@
-version: '3.9'
+version: "3.9"
 
 services:
   app:
     build: .
-    image: app
+    image: '${TEST_IMAGE}'
     ports:
       - '8080:50051'
     environment:
@@ -17,6 +17,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      mongodb-primary:
+        condition: service_started
     links:
       - mongodb-primary
       - mongodb-secondary
@@ -33,7 +35,8 @@ services:
       - MONGODB_ROOT_PASSWORD=prisma
       - MONGODB_REPLICA_SET_KEY=replicasetkey123
     ports:
-      - 27017
+      - "27017"
+    restart: always
     volumes:
       - 'mongodb_master_data:/bitnami'
     networks:
@@ -51,7 +54,8 @@ services:
       - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=prisma
       - MONGODB_REPLICA_SET_KEY=replicasetkey123
     ports:
-      - 27017
+      - "27017"
+    restart: always
     networks:
       - app-tier
 
@@ -67,7 +71,8 @@ services:
       - MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD=prisma
       - MONGODB_REPLICA_SET_KEY=replicasetkey123
     ports:
-      - 27017
+      - "27017"
+    restart: always
     networks:
       - app-tier
 
@@ -84,6 +89,7 @@ services:
       retries: 5
     ports:
       - "5672"
+    restart: always
     networks:
       - app-tier
 
