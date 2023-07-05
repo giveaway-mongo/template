@@ -63,6 +63,7 @@ export class SamplesService {
     }
 
     const sampleToCreate: Prisma.SampleCreateInput = {
+      userGuid: sample.userGuid,
       guid: generateGuid(),
       title: sample.title,
       text: sample.text,

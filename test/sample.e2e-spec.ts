@@ -56,6 +56,7 @@ describe('SampleController (e2e)', () => {
 
   it('creates one sample', async () => {
     const sample: SampleCreateRequest = {
+      userGuid: '039b06f5-e1e8-48f4-8de9-4f88da9e07d2',
       title: 'Title for created sample',
       text: 'Text for created sample',
     };
@@ -69,6 +70,7 @@ describe('SampleController (e2e)', () => {
 
   it('updates one sample', async () => {
     const updatedSample: SampleUpdateRequest = {
+      userGuid: '039b06f5-e1e8-48f4-8de9-4f88da9e07d2',
       guid: '039b06f5-e1e8-48f4-8de9-4f88da9e07df',
       title: 'Updated title',
       text: 'Updated text',
@@ -95,6 +97,7 @@ describe('SampleController (e2e)', () => {
 
   it('errors. Creating one sample without title', async () => {
     const sample: SampleCreateRequest = {
+      userGuid: '039b06f5-e1e8-48f4-8de9-4f88da9e07d2',
       title: null,
       text: 'Text for created sample',
     };
@@ -107,6 +110,7 @@ describe('SampleController (e2e)', () => {
 
   it('errors. Creating one sample without text', async () => {
     const sample: SampleCreateRequest = {
+      userGuid: '039b06f5-e1e8-48f4-8de9-4f88da9e07d2',
       title: 'title',
       text: null,
     };
@@ -120,6 +124,7 @@ describe('SampleController (e2e)', () => {
 
   it('errors. Creating one sample without title and text', async () => {
     const sample: SampleCreateRequest = {
+      userGuid: '039b06f5-e1e8-48f4-8de9-4f88da9e07d2',
       title: null,
       text: null,
     };

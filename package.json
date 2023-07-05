@@ -20,7 +20,6 @@
     "protogen": "bash scripts/protogen.sh",
     "mongo:start": "docker-compose -f docker-compose.mongo.yaml up",
     "test:e2e": "dotenv -e env/.env.test -- jest --config ./test/jest-e2e.json",
-    "win:test:e2e": "dotenv -e env/.env.win-test -- jest --config ./test/jest-e2e.json",
     "test:docker-e2e": "dotenv -e env/.env.docker-test -- jest --config ./test/jest-e2e.json",
     "test:db-push": "dotenv -e env/.env.test -- npx prisma db push --force-reset",
     "docker:build": "docker build -f Dockerfile.test -t app . && docker-compose -f docker-compose.test.yaml run app"

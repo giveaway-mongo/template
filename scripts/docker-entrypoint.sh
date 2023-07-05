@@ -29,7 +29,7 @@ if [[ $RUN == "test" ]]; then
   echo -e "\nRun tests"
   export NODE_ENV='test'
 
-  printf  "\nDATABASE_URL=%s" "$DATABASE_URL" >> ./scripts/.env.docker-test
+  printf  "\nDATABASE_URL=%s" "$DATABASE_URL" >> ./env/.env.docker-test
 
   npm run test:docker-e2e
   exit
