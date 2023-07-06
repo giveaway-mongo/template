@@ -7,10 +7,6 @@ import { promisify } from 'node:util';
 import { isTestEnvironment } from '@common/utils/environment';
 import { getRabbitMQOptions } from '@common/rabbitMQ/rabbitMQ-options';
 import { protoPath } from '@src/constants/proto-path';
-import {
-  RpcExceptionFilter,
-  ServerExceptionFilter,
-} from '@common/utils/rpc-exception.filter';
 
 const execAsync = promisify(exec);
 
@@ -24,17 +20,13 @@ global.beforeAll(async () => {
     throw Error('Not testing environment!');
   }
 
-  console.log('db url:', process.env.DATABASE_URL);
-
   testingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
 
   app = await testingModule
     .createNestApplication()
-    .useGlobalPipes(new ValidationPipe({ transform: true }))
-    .useGlobalFilters(new ServerExceptionFilter())
-    .useGlobalFilters(new RpcExceptionFilter());
+    .useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.connectMicroservice(getGrpcTestingOptions('sample', protoPath), {
     inheritAppConfig: true,
@@ -47,8 +39,6 @@ global.beforeAll(async () => {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   await app.startAllMicroservices();
-  await app.init();
-  await app.listen(3001);
 
   (global as any).app = app;
   (global as any).testingModule = testingModule;
