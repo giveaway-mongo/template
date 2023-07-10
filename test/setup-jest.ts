@@ -46,10 +46,10 @@ global.beforeAll(async () => {
   await execAsync('pnpm test:db-push');
 });
 
-afterAll(async () => {
+global.afterAll(async () => {
   await app.close();
 });
 
-afterEach(async () => {
+global.afterEach(async () => {
   await execAsync('pnpm test:db-push');
 }, 15000);

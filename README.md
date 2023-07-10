@@ -34,6 +34,18 @@ Synchronize with remote repository
 git pull origin master
 ```
 
+If you cloned the project and did not install protos, then run these commands:
+
+```bash
+git submodule init
+git submodule update --remote --recursive --merge
+cd protos
+git checkout master
+cd ..
+```
+
+Then, in future just sync the protos and that's it.
+
 Pull proto files and other submodules
 
 ```bash
@@ -83,11 +95,6 @@ If you do not need that, just delete the ClientModule.
 After that, write e2e tests and run them using pnpm test:e2e.
 
 # Testing
-
-Run mongodb locally if not already started:
-```bash
-pnpm mongo:start
-```
 
 Run tests via:
 ```bash
